@@ -7,6 +7,7 @@ use env_logger::{Builder, Target};
 use log::LevelFilter;
 
 mod cli;
+mod parser;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// This is where the magic happens.
@@ -31,6 +32,9 @@ fn run() -> Result<(), Box<dyn Error>> {
     // Initialize logging
     logbuilder.target(Target::Stdout).init();
 
+    // Set some flags to determine how to behave
+    let print_detail = cli_args.value_source("detail-off") != Some(ValueSource::CommandLine);
+
     // Start processing stuff and things
     for argument in cli_args
         .get_many::<String>("read")
@@ -39,8 +43,13 @@ fn run() -> Result<(), Box<dyn Error>> {
     {
         for entry in glob(&argument).expect("Failed to read glob pattern") {
             match entry {
-                Ok(path) => println!("{argument} -- {:?}", path.display()),
-                Err(e) => println!("{:?}", e),
+                Ok(path) => {
+                    log::debug!("{argument} -- {:?}", path.display());
+                    parser::parse(&path, print_detail)?;
+                }
+                Err(e) => {
+                    return Err(format!("Globbing failed. Error message: {e}").into());
+                }
             }
         }
     }
@@ -55,8 +64,8 @@ fn main() {
     std::process::exit(match run() {
         Ok(_) => 0, // everying is hunky dory - exit with code 0 (success)
         Err(err) => {
-            log::error!("{}", err.to_string().replace("\"", ""));
-            1 // exit with a non-zero return code, indicating a problem
+            log::error!("{}", err.to_string().replace('\"', ""));
+            1 // exitErr(e.into()) with a non-zero return code, indicating a problem
         }
     });
 }

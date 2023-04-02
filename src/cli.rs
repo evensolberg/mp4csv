@@ -22,6 +22,7 @@ pub fn build() -> ArgMatches {
                 .long("debug")
                 .help("Output debug information as we go. Supply it twice for trace-level logs.")
                 .hide(true)
+                .env("MP4CSV_DEBUG")
                 .num_args(0)
                 .action(ArgAction::Count)
         )

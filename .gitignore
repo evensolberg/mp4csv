@@ -11,3 +11,5 @@ Cargo.lock
 
 # Data files that are too big to be uploaded
 /data
+.DS_Store
+atoms.txt
