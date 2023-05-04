@@ -51,10 +51,10 @@ pub fn build() -> ArgMatches {
                 .action(ArgAction::SetTrue)
         )
         .arg(
-            Arg::new("output-csv")
+            Arg::new("csv-filename")
                 .short('c')
                 .long("csv-filename")
-                .help("The name of the CSV file containing the video metadata summaries.")
+                .help("The name of the resulting CSV file containing the video metadata summaries.")
                 .num_args(..=1)
                 .default_missing_value("video-data.csv")
                 .action(ArgAction::Set)

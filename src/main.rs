@@ -1,5 +1,5 @@
 use clap::parser::ValueSource; // Command line
-use glob::glob;
+
 use std::error::Error;
 
 // Logging
@@ -8,6 +8,8 @@ use log::LevelFilter;
 
 mod cli;
 mod parser;
+
+use parser::VideoInfo;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// This is where the magic happens.
@@ -19,42 +21,43 @@ fn run() -> Result<(), Box<dyn Error>> {
     let mut logbuilder = Builder::new();
 
     // Figure out what log level to use.
-    if cli_args.value_source("quiet") != Some(ValueSource::CommandLine) {
+    if cli_args.value_source("quiet") == Some(ValueSource::CommandLine) {
+        logbuilder.filter_level(LevelFilter::Off);
+    } else {
         match cli_args.get_count("debug") {
             0 => logbuilder.filter_level(LevelFilter::Info),
             1 => logbuilder.filter_level(LevelFilter::Debug),
             _ => logbuilder.filter_level(LevelFilter::Trace),
         };
-    } else {
-        logbuilder.filter_level(LevelFilter::Off);
     }
 
     // Initialize logging
     logbuilder.target(Target::Stdout).init();
 
     // Set some flags to determine how to behave
-    let print_detail = cli_args.value_source("detail-off") != Some(ValueSource::CommandLine);
+    let _print_detail = cli_args.value_source("detail-off") == Some(ValueSource::CommandLine);
+
+    // Create a vector to store the video info structs
+    let mut video_info: Vec<VideoInfo> = Vec::new();
 
     // Start processing stuff and things
-    for argument in cli_args
+    for filename in cli_args
         .get_many::<String>("read")
         .unwrap_or_default()
         .map(std::string::String::as_str)
     {
-        for entry in glob(&argument).expect("Failed to read glob pattern") {
-            match entry {
-                Ok(path) => {
-                    log::debug!("{argument} -- {:?}", path.display());
-                    parser::parse(&path, print_detail)?;
-                }
-                Err(e) => {
-                    return Err(format!("Globbing failed. Error message: {e}").into());
-                }
-            }
-        }
+        let vi = VideoInfo::from(filename)?;
+        log::debug!("vi = {:#?}", vi);
+        video_info.push(vi);
     }
 
     // Everything is a-okay in the end
+    let default_filename = "video_info.csv".to_string();
+    let csv_filename = cli_args
+        .get_one::<String>("csv-filename")
+        .unwrap_or(&default_filename);
+    export_csv(&video_info, csv_filename)?;
+
     Ok(())
 } // fn run()
 
@@ -68,4 +71,13 @@ fn main() {
             1 // exitErr(e.into()) with a non-zero return code, indicating a problem
         }
     });
+}
+
+fn export_csv(vi: &Vec<VideoInfo>, filename: &str) -> Result<(), Box<dyn Error>> {
+    let mut wtr = csv::Writer::from_path(filename)?;
+    for v in vi {
+        wtr.serialize(v)?;
+    }
+    wtr.flush()?;
+    Ok(())
 }
