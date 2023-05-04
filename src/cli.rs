@@ -42,14 +42,6 @@ pub fn build() -> ArgMatches {
                 .num_args(0)
                 .action(ArgAction::SetTrue)
         )
-        .arg( // Don't export detail information
-            Arg::new("detail-off")
-                .short('o')
-                .long("detail-off")
-                .help("Don't export detailed information about each file processed.")
-                .num_args(0)
-                .action(ArgAction::SetTrue)
-        )
         .arg(
             Arg::new("csv-filename")
                 .short('c')

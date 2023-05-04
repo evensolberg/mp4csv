@@ -35,20 +35,27 @@ fn run() -> Result<(), Box<dyn Error>> {
     logbuilder.target(Target::Stdout).init();
 
     // Set some flags to determine how to behave
-    let _print_detail = cli_args.value_source("detail-off") == Some(ValueSource::CommandLine);
+    let quiet = cli_args.value_source("quiet") == Some(ValueSource::CommandLine);
+    let print_summary = cli_args.value_source("print-summary") == Some(ValueSource::CommandLine);
 
     // Create a vector to store the video info structs
     let mut video_info: Vec<VideoInfo> = Vec::new();
 
     // Start processing stuff and things
+    let mut files_processed = 0;
     for filename in cli_args
         .get_many::<String>("read")
         .unwrap_or_default()
         .map(std::string::String::as_str)
     {
+        if !quiet {
+            log::info!("Processing: {filename}");
+        }
+        
         let vi = VideoInfo::from(filename)?;
-        log::debug!("vi = {:#?}", vi);
+        log::debug!("vi = {vi:#?}");
         video_info.push(vi);
+        files_processed += 1;
     }
 
     // Everything is a-okay in the end
@@ -57,6 +64,10 @@ fn run() -> Result<(), Box<dyn Error>> {
         .get_one::<String>("csv-filename")
         .unwrap_or(&default_filename);
     export_csv(&video_info, csv_filename)?;
+
+    if !quiet && print_summary {
+        log::info!("Files processed: {files_processed}");
+    }
 
     Ok(())
 } // fn run()

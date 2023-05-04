@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 
 - Initial commit
 
+### Features
+
+- First working version
+
 ### Refactor
 
 - First stab at it
