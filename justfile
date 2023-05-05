@@ -60,7 +60,7 @@ alias tp := testp
     -rm bom.txt > /dev/null 2>&1
     -rm tests.txt > /dev/null 2>&1
     -rm tokei.txt > /dev/null 2>&1
-    -rm my_application.log > /dev/null 2>&1
+    -rm mp4csv.log > /dev/null 2>&1
 
 # Rebuilds the changelog
 @cliff: changelog
@@ -68,12 +68,7 @@ alias tp := testp
 # Documents the project, lints it, builds and installs the release version, and cleans up
 @release: format changelog
     cargo lbuild --release  --color 'always'
-    -cp {{invocation_directory()}}/target/release/my_application /usr/local/bin/
-    -cp {{invocation_directory()}}/target/release/id3show /usr/local/bin/
-    -{{invocation_directory()}}/target/release/id3cli-gen
-    echo "Moving Fig and man files."
-    -mv {{invocation_directory()}}/my_application.1 /usr/local/share/man/man1/
-    -mv {{invocation_directory()}}/my_application.js ~/.fig/autocomplete/
+    -cp {{invocation_directory()}}/target/release/mp4csv /usr/local/bin/
     cargo clean
 
 # Documents the project, builds and installs the release version, and cleans up
@@ -204,7 +199,7 @@ alias tp := testp
 # Check for new versions of crates and upgrade accordingly
 @upgrade:
     cargo update
-    cargo upgrade --workspace
+    cargo upgrade
 
 # Copy this settings files to the templates directory
 @just:

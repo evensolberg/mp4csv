@@ -11,7 +11,7 @@ pub fn build() -> ArgMatches {
         .arg(
             Arg::new("read")
                 .value_name("FILE(S)")
-                .help("One or more file(s) to process. Wildcards and multiple_occurrences files (e.g. 2019*.pdf 2020*.pdf) are supported.")
+                .help("One or more file(s) to process. Wildcards and multiple_occurrences files (e.g. here/*.mp4 there/*.MP4) are supported.")
                 .required(true)
                 .num_args(1..)
                 .action(ArgAction::Append)

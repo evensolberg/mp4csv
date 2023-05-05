@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Features
 
 - First working version
+- First working version
 
 ### Refactor
 

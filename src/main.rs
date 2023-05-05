@@ -51,7 +51,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         if !quiet {
             log::info!("Processing: {filename}");
         }
-        
+
         let vi = VideoInfo::from(filename)?;
         log::debug!("vi = {vi:#?}");
         video_info.push(vi);
