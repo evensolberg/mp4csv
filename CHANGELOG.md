@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
 - First working version
 - First working version
 
+### Miscellaneous Tasks
+
+- Small fixes
+
 ### Refactor
 
 - First stab at it
