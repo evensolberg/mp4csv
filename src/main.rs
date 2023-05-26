@@ -8,6 +8,7 @@ use log::LevelFilter;
 
 mod cli;
 mod parser;
+mod utils;
 
 use parser::VideoInfo;
 
@@ -58,8 +59,8 @@ fn run() -> Result<(), Box<dyn Error>> {
         files_processed += 1;
     }
 
-    // Everything is a-okay in the end
-    let default_filename = "video_info.csv".to_string();
+    // Write the summary CSV file
+    let default_filename = "video-data.csv".to_string();
     let csv_filename = cli_args
         .get_one::<String>("csv-filename")
         .unwrap_or(&default_filename);

@@ -1,145 +1,76 @@
 //! Reads video files and extracts relevant data
+use crate::utils::{duration_seconds, mp4_time_to_datetime_local};
 
+use chrono::{DateTime, Duration, Local};
 use file_format::FileFormat;
+use mp4::TrackType;
 use serde::Serialize;
-use std::{error::Error, path::PathBuf};
-use time::{Duration, OffsetDateTime};
+use serde_with::serde_as;
+use std::{error::Error, fs::File, io::BufReader};
 
-use mp4::{Atom, Mp4File};
-
+#[serde_as]
 #[derive(Debug, Serialize, Clone)]
 pub struct VideoInfo {
     pub filename: String,
     pub size_bytes: u64,
-    pub creation_time: OffsetDateTime,
-    pub modification_time: OffsetDateTime,
-    pub num_frames: u64,
+    pub creation_time: DateTime<Local>,
+    pub modification_time: DateTime<Local>,
+    #[serde_as(as = "serde_with::DurationSeconds<f64>")]
     pub duration: Duration,
+    pub bitrate_kbps: f64,
     pub fps: f64,
+}
+
+impl Default for VideoInfo {
+    fn default() -> Self {
+        Self {
+            filename: String::new(),
+            size_bytes: 0,
+            creation_time: Local::now(),
+            modification_time: Local::now(),
+            duration: Duration::zero(),
+            bitrate_kbps: 0.0,
+            fps: 0.0,
+        }
+    }
 }
 
 impl VideoInfo {
     /// Create a new VideoInfo struct with the given filename
     #[allow(clippy::cast_possible_truncation)]
-    pub fn from(filename: &str) -> Result<Self, Box<dyn Error>> {
-        let mut s = Self {
-            filename: filename.to_string(),
-            size_bytes: 0,
-            creation_time: OffsetDateTime::now_local()?,
-            modification_time: OffsetDateTime::now_local()?,
-            num_frames: 0,
-            duration: Duration::seconds(0),
-            fps: 0.0,
-        };
+    pub fn from(filename: &str) -> std::result::Result<Self, Box<dyn Error>> {
+        let mut s = Self::default();
 
-        let mp4 = open_mp4(&PathBuf::from(&s.filename))?;
-        log::debug!("mp4 = {:#?}", mp4);
+        s.filename = filename.to_string();
 
-        s.size_bytes = mp4.file_size();
+        let format = FileFormat::from_file(filename)?;
+        if format.media_type() != "video/mp4" {
+            return Err(format!("Unsupported media type: {}", format.media_type()).into());
+        }
 
-        // Get creation and modification times
-        let atoms = mp4.atoms();
-        log::debug!("Atoms: {atoms:?}");
+        let f = File::open(filename)?;
+        let size = f.metadata()?.len();
+        let reader = BufReader::new(f);
 
-        for atom in atoms {
-            log::debug!("atom = {atom:?}");
-            if let Atom::Moov(data) = atom {
-                let header = data.header();
-                log::debug!("header = {header:?}");
-                let children = data.children();
-                log::debug!("Children:");
-                for child in children {
-                    if let Atom::Mvhd(mvhd) = child {
-                        let ct = mvhd.creation_time_utc();
-                        log::debug!("Mvhd::creation_time = {ct}");
+        let mp4 = mp4::Mp4Reader::read_header(reader, size)?;
 
-                        let mt = mvhd.modification_time_utc();
-                        log::debug!("Mvhd::modification_time = {mt}");
+        s.size_bytes = mp4.size();
+        s.creation_time = mp4_time_to_datetime_local(mp4.moov.mvhd.creation_time);
+        s.modification_time = mp4_time_to_datetime_local(mp4.moov.mvhd.modification_time);
 
-                        let timescale = mvhd.timescale();
-                        log::debug!("Mvhd::timescale = {timescale}");
+        let dur = mp4.moov.mvhd.duration;
+        let ts = mp4.moov.mvhd.timescale;
+        s.duration = duration_seconds(dur as f64, ts as f64);
 
-                        let dur = mvhd.duration_seconds();
-                        log::debug!("Mvhd::duration = {dur:?} seconds");
-
-                        let rate = mvhd.rate();
-                        log::debug!("Mvhd::rate = {rate}");
-
-                        let volume = mvhd.volume();
-                        log::debug!("Mvhd::volume = {volume}");
-
-                        let matrix = mvhd.matrix();
-                        log::debug!("Mvhd::matrix = {matrix:?}");
-
-                        let next_track_id = mvhd.next_track_id();
-                        log::debug!("Mvhd::next_track_id = {next_track_id}");
-                    }
+        for track in mp4.tracks().values() {
+            if track.track_type().unwrap() == TrackType::Video {
+                if track.trak.mdia.minf.stbl.stsd.avc1.is_some() {
+                    s.bitrate_kbps = (track.bitrate() / 1000) as f64;
+                    s.fps = track.frame_rate();
                 }
-            }
-
-            if let Atom::Stts(data) = atom {
-                let header = &data.header;
-                log::debug!("Stts::header = {header:?}");
-                let children = data.entries();
-                log::debug!("Stts::Children:");
-                for child in children {
-                    s.num_frames += child.sample_count as u64;
-                }
-            }
-
-            if let Atom::Cslg(data) = atom {
-                let header = &data.header;
-                log::debug!("Cslg::header = {header:?}");
-                log::debug!(
-                    "Cslg::composition_to_dtsshift = {}",
-                    data.composition_to_dtsshift()
-                );
-                log::debug!(
-                    "Cslg::least_decode_to_display_delta = {}",
-                    data.least_decode_to_display_delta()
-                );
-                log::debug!(
-                    "Cslg::greatest_decode_to_display_delta = {}",
-                    data.greatest_decode_to_display_delta()
-                );
-                log::debug!(
-                    "Cslg::composition_start_time = {}",
-                    data.composition_start_time()
-                );
-                log::debug!(
-                    "Cslg::composition_end_time = {}",
-                    data.composition_end_time()
-                );
-            }
-
-            if let Atom::Tkhd(data) = atom {
-                log::debug!("Tkhd::header = {:?}", data.header());
-                log::debug!("Tkhd::creation_time = {}", data.creation_time());
-                log::debug!("Tkhd::modification_time = {}", data.modification_time());
-                log::debug!("Tkhd::track_id = {}", data.track_id());
-                log::debug!("Tkhd::duration = {}", data.duration());
-                log::debug!("Tkhd::layer = {}", data.layer());
-                log::debug!("Tkhd::alternate_group = {}", data.alternate_group());
-                log::debug!("Tkhd::volume = {}", data.volume());
-                log::debug!("Tkhd::matrix = {:?}", data.matrix());
-                log::debug!("Tkhd::width = {}", data.width());
-                log::debug!("Tkhd::height = {}", data.height());
             }
         }
 
         Ok(s)
     }
-}
-
-/// Opens the given file and returns a parsed `Mp4File` struct if it is an MP4 file.
-fn open_mp4(filename: &PathBuf) -> Result<Mp4File, Box<dyn Error>> {
-    let format = FileFormat::from_file(filename)?;
-    let mp4 = if format.media_type() == "video/mp4" {
-        let filename_str = filename.to_str().unwrap_or_default();
-        mp4::parse_file(filename_str)?
-    } else {
-        return Err("File does not appear to be an MP4".into());
-    };
-
-    Ok(mp4)
 }

@@ -2,15 +2,26 @@
 name = "mp4csv"
 version = "0.2.0"
 edition = "2021"
+license = "MIT"
+description = "A tool to extract metadata from MP4 files and output them as CSV"
+readme = "README.md"
+repository = "https://www,github.com/evensolberg/mp4csv"
+homepage = "https://www.github.com/evensolberg/mp4csv"
+documentation = "https://www.github.com/evensolberg/mp4csv"
+keywords = ["mp4", "metadata", "csv", "media"]
+categories = ["media", "metadata", "export", "csv", "mp4", "statistics"]
+authors = ["Even Solberg <even.solberg@gmail.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+chrono = { version = "0.4.24", features = ["serde"] }
 clap = { version = "4.2.7", features = ["cargo", "env", "wrap_help"] }
 csv = "1.2.1"
 env_logger = "0.10.0"
 file-format = "0.16.0"
 log = "0.4.17"
-mp4 = { path = "../_crates/rust-mp4" }
+# mp4 = { path = "../_crates/rust-mp4" }
+mp4 = "0.13.0"
 serde = { version = "1.0.161", features = ["derive"] }
-time = { version = "0.3.20", features = ["formatting", "macros", "parsing", "serde-human-readable", "local-offset"] }
+serde_with = { version = "3.0.0", features = ["chrono"] }
