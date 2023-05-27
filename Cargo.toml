@@ -1,6 +1,6 @@
 [package]
 name = "mp4csv"
-version = "0.3.2"
+version = "0.3.3"
 edition = "2021"
 license = "MIT"
 description = "A tool to extract metadata from MP4 files and output them as CSV"
