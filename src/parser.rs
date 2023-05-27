@@ -8,16 +8,30 @@ use serde::Serialize;
 use serde_with::serde_as;
 use std::{error::Error, fs::File, io::BufReader};
 
+/// A struct that holds information about a video file that has been read
 #[serde_as]
 #[derive(Debug, Serialize, Clone)]
 pub struct VideoInfo {
+    /// The name of the file
     pub filename: String,
+
+    /// The size of the file in bytes
     pub size_bytes: u64,
+
+    /// The creation time of the file as a `DateTime<Local>`
     pub creation_time: DateTime<Local>,
+
+    /// The modification time of the file as a `DateTime<Local>`
     pub modification_time: DateTime<Local>,
+
+    /// The duration of the video as a `Duration` (typically in seconds)
     #[serde_as(as = "serde_with::DurationSeconds<f64>")]
     pub duration: Duration,
+
+    /// The bitrate of the video in kilobits per second
     pub bitrate_kbps: f64,
+
+    /// The frame rate of the video in frames per second
     pub fps: f64,
 }
 
@@ -37,6 +51,26 @@ impl Default for VideoInfo {
 
 impl VideoInfo {
     /// Create a new `VideoInfo` struct with the given filename
+    ///
+    /// # Arguments
+    ///
+    /// * `filename` - A string slice that holds the name of the file to read
+    ///
+    /// # Returns
+    ///
+    /// * `Result<VideoInfo, Box<dyn Error>>` - A `VideoInfo` struct, or an error
+    ///
+    /// # errors
+    ///
+    /// * `Box<dyn Error>` - An error if the file cannot be read
+    /// * `Box<dyn Error>` - An error if the file is not a video file
+    /// * `Box<dyn Error>` - An error if the file is not a supported video file
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// let video_info = VideoInfo::from("video.mp4");
+    /// ```
     #[allow(clippy::cast_possible_truncation)]
     pub fn from(filename: &str) -> std::result::Result<Self, Box<dyn Error>> {
         let mut s = Self::default();

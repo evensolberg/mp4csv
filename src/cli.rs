@@ -2,6 +2,14 @@
 use clap::{Arg, ArgAction, ArgMatches, Command};
 
 /// Builds the CLI so the main file doesn't get cluttered.
+///
+/// # Arguments
+///
+/// None.
+///
+/// # Returns
+///
+/// * `ArgMatches` - The command line arguments
 pub fn build() -> ArgMatches {
     Command::new(clap::crate_name!())
         .about(clap::crate_description!())

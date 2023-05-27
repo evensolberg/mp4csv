@@ -7,7 +7,7 @@ use env_logger::{Builder, Target};
 use log::LevelFilter;
 
 mod cli;
-mod input;
+mod inout;
 mod parser;
 mod utils;
 
@@ -43,7 +43,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     // Start processing stuff and things
     let mut video_info: Vec<VideoInfo> = Vec::new();
     let mut files_processed = 0;
-    for filename in input::files_to_process(&cli_args)? {
+    for filename in inout::files_to_process(&cli_args)? {
         if !quiet {
             log::info!("Processing: {filename}");
         }
@@ -55,7 +55,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     }
 
     // Write the summary CSV file
-    let csv_filename = input::output_csv_filename(&cli_args);
+    let csv_filename = inout::output_csv_filename(&cli_args);
 
     if !quiet {
         log::info!("Writing summary to CSV file: {csv_filename}");
@@ -82,6 +82,16 @@ fn main() {
     });
 }
 
+/// Writes the video info to a CSV file
+///
+/// # Arguments
+///
+/// * `vi` - A reference to a vector of `VideoInfo` structs
+/// * `filename` - The name of the CSV file to write
+///
+/// # Returns
+///
+/// * `Result<(), Box<dyn Error>>` - An empty result if everything went well, or an error if not.
 fn export_csv(vi: &Vec<VideoInfo>, filename: &str) -> Result<(), Box<dyn Error>> {
     let mut wtr = csv::Writer::from_path(filename)?;
     for v in vi {
