@@ -1,4 +1,4 @@
-//! Contains a single function to read the input CSV file
+//! Contains functions to read and write CSV files
 
 use std::error::Error;
 
@@ -30,6 +30,20 @@ fn source_csv(filename: &str) -> Result<Vec<String>, Box<dyn Error>> {
 }
 
 /// Returns a vector of file names from the command line arguments
+///
+/// # Arguments
+///
+/// * `cli_args` - A reference to the command line arguments
+///
+/// # Returns
+///
+/// * `Result<Vec<String>, Box<dyn Error>>` - A vector of strings, each string being a file name, or an error
+///
+/// # Example
+///
+/// ```ignore
+/// let files = files_to_process(&cli_args);
+/// ```
 pub fn files_to_process(cli_args: &clap::ArgMatches) -> Result<Vec<String>, Box<dyn Error>> {
     let res = if cli_args.value_source("input-csv") == Some(clap::parser::ValueSource::CommandLine)
     {
@@ -52,7 +66,21 @@ pub fn files_to_process(cli_args: &clap::ArgMatches) -> Result<Vec<String>, Box<
     Ok(res)
 }
 
-/// Returns the name of the CSV file to write
+/// Returns the name of the CSV file to write from the command line arguments
+///
+/// # Arguments
+///
+/// * `cli_args` - A reference to the command line arguments
+///
+/// # Returns
+///
+/// * `String` - The name of the CSV file to write
+///
+/// # Example
+///
+/// ```ignore
+/// let csv_filename = output_csv_filename(&cli_args);
+/// ```
 pub fn output_csv_filename(cli_args: &clap::ArgMatches) -> String {
     let default_filename = "video-data.csv".to_string();
     let csv_filename = cli_args

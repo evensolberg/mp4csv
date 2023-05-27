@@ -83,6 +83,10 @@ alias tp := testp
 @doc:
     cargo doc --no-deps
 
+# Build the documentation and open it in the browser
+@doco:
+    cargo doc --no-deps --open
+
 # Documents the project
 @docs: format
     cargo doc --no-deps
