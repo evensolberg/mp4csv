@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - Initial commit
 - More detail
+- Move to the MP4 crate
 
 ### Features
 

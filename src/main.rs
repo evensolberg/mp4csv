@@ -7,6 +7,7 @@ use env_logger::{Builder, Target};
 use log::LevelFilter;
 
 mod cli;
+mod input;
 mod parser;
 mod utils;
 
@@ -39,32 +40,28 @@ fn run() -> Result<(), Box<dyn Error>> {
     let quiet = cli_args.value_source("quiet") == Some(ValueSource::CommandLine);
     let print_summary = cli_args.value_source("print-summary") == Some(ValueSource::CommandLine);
 
-    // Create a vector to store the video info structs
-    let mut video_info: Vec<VideoInfo> = Vec::new();
-
     // Start processing stuff and things
+    let mut video_info: Vec<VideoInfo> = Vec::new();
     let mut files_processed = 0;
-    for filename in cli_args
-        .get_many::<String>("read")
-        .unwrap_or_default()
-        .map(std::string::String::as_str)
-    {
+    for filename in input::files_to_process(&cli_args)? {
         if !quiet {
             log::info!("Processing: {filename}");
         }
 
-        let vi = VideoInfo::from(filename)?;
+        let vi = VideoInfo::from(filename.as_str())?;
         log::debug!("vi = {vi:#?}");
         video_info.push(vi);
         files_processed += 1;
     }
 
     // Write the summary CSV file
-    let default_filename = "video-data.csv".to_string();
-    let csv_filename = cli_args
-        .get_one::<String>("csv-filename")
-        .unwrap_or(&default_filename);
-    export_csv(&video_info, csv_filename)?;
+    let csv_filename = input::output_csv_filename(&cli_args);
+
+    if !quiet {
+        log::info!("Writing summary to CSV file: {csv_filename}");
+    }
+
+    export_csv(&video_info, csv_filename.as_str())?;
 
     if !quiet && print_summary {
         log::info!("Files processed: {files_processed}");

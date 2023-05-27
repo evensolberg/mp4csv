@@ -7,7 +7,7 @@ use chrono::{DateTime, Duration, Local, TimeZone};
 #[allow(clippy::cast_possible_wrap)]
 #[must_use]
 pub fn mp4_time_to_datetime_local(time: u64) -> DateTime<Local> {
-    let offset_in_sec = Local::now().offset().local_minus_utc() as i64;
+    let offset_in_sec = i64::try_from(Local::now().offset().local_minus_utc()).unwrap_or_default();
     let unix_time = mp4time_to_unix_time(time).unwrap_or_default() as i64;
 
     // Return the converted value
