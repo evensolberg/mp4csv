@@ -2,13 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.3.1] - 2023-05-27
 
 ### Feat
 
 - Initial commit
 - More detail
 - Move to the MP4 crate
+- Added input file
+- Add distribution mechanism
 
 ### Features
 
