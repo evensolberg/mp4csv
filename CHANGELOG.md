@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [unreleased]
+
+### Chore
+
+- Update cargo
+- Update file-format requirement from 0.16.0 to 0.17.3
+
+## [0.3.3] - 2023-05-27
+
+### Chore
+
+- Update justfile
+
+### Feat
+
+- Version bump
+
+## [0.3.2] - 2023-05-27
+
+### Doc
+
+- Updated changelog and readme
+- Add function documentation
+
 ## [0.3.1] - 2023-05-27
 
 ### Feat

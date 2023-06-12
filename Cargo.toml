@@ -16,7 +16,7 @@ authors = ["Even Solberg <even.solberg@gmail.com>"]
 
 [dependencies]
 chrono = { version = "0.4.24", features = ["serde"] }
-clap = { version = "4.2.7", features = ["cargo", "env", "wrap_help"] }
+clap = { version = "4.3.0", features = ["cargo", "env", "wrap_help"] }
 csv = "1.2.1"
 env_logger = "0.10.0"
 file-format = "0.17.3"
