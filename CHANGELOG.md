@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - Update cargo
 - Update file-format requirement from 0.16.0 to 0.17.3
+- Dependencies update
 
 ## [0.3.3] - 2023-05-27
 

@@ -75,7 +75,7 @@ alias tp := testp
 @releasea: format changelog
     cargo lbuild --release  --color 'always' --target aarch64-apple-darwin
     cargo strip --target aarch64-apple-darwin
-    cp {{invocation_directory()}}/target/aarch64-apple-darwin/release/{{application}} /usr/local/bin/
+    mv {{invocation_directory()}}/target/aarch64-apple-darwin/release/{{application}} /usr/local/bin/
     cargo clean
 
 # Build the documentation

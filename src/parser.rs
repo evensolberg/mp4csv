@@ -73,9 +73,9 @@ impl VideoInfo {
     /// ```
     #[allow(clippy::cast_possible_truncation)]
     pub fn from(filename: &str) -> std::result::Result<Self, Box<dyn Error>> {
-        let mut s = Self::default();
+        let mut vi = Self::default();
 
-        s.filename = filename.to_string();
+        vi.filename = filename.to_string();
 
         let format = FileFormat::from_file(filename)?;
         if format.media_type() != "video/mp4" {
@@ -88,23 +88,23 @@ impl VideoInfo {
 
         let mp4 = mp4::Mp4Reader::read_header(reader, size)?;
 
-        s.size_bytes = mp4.size();
-        s.creation_time = mp4_time_to_datetime_local(mp4.moov.mvhd.creation_time);
-        s.modification_time = mp4_time_to_datetime_local(mp4.moov.mvhd.modification_time);
+        vi.size_bytes = mp4.size();
+        vi.creation_time = mp4_time_to_datetime_local(mp4.moov.mvhd.creation_time);
+        vi.modification_time = mp4_time_to_datetime_local(mp4.moov.mvhd.modification_time);
 
         let dur = mp4.moov.mvhd.duration;
         let ts = mp4.moov.mvhd.timescale;
-        s.duration = duration_seconds(dur as f64, f64::from(ts));
+        vi.duration = duration_seconds(dur as f64, f64::from(ts));
 
         for track in mp4.tracks().values() {
             if track.track_type()? == TrackType::Video
                 && track.trak.mdia.minf.stbl.stsd.avc1.is_some()
             {
-                s.bitrate_kbps = f64::from(track.bitrate() / 1000);
-                s.fps = track.frame_rate();
+                vi.bitrate_kbps = f64::from(track.bitrate() / 1000);
+                vi.fps = track.frame_rate();
             }
         }
 
-        Ok(s)
+        Ok(vi)
     }
 }
