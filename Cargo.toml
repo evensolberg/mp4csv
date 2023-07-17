@@ -19,7 +19,7 @@ chrono = { version = "0.4.24", features = ["serde"] }
 clap = { version = "4.3.0", features = ["cargo", "env", "wrap_help"] }
 csv = "1.2.1"
 env_logger = "0.10.0"
-file-format = "0.17.3"
+file-format = "0.18.0"
 log = "0.4.17"
 # mp4 = { path = "../_crates/rust-mp4" }
 mp4 = "0.13.0"
