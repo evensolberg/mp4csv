@@ -22,7 +22,7 @@ env_logger = "0.10.0"
 file-format = "0.18.0"
 log = "0.4.17"
 # mp4 = { path = "../_crates/rust-mp4" }
-mp4 = "0.13.0"
+mp4 = "0.14.0"
 serde = { version = "1.0.161", features = ["derive"] }
 serde_with = { version = "3.0.0", features = ["chrono"] }
 
