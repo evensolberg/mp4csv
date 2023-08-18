@@ -39,6 +39,13 @@ fn run() -> Result<(), Box<dyn Error>> {
     // Set some flags to determine how to behave
     let quiet = cli_args.value_source("quiet") == Some(ValueSource::CommandLine);
     let print_summary = cli_args.value_source("print-summary") == Some(ValueSource::CommandLine);
+    let export_to_csv = cli_args.value_source("csv-filename") == Some(ValueSource::CommandLine);
+    let export_to_json = cli_args.value_source("json-filename") == Some(ValueSource::CommandLine);
+
+    if !export_to_csv && !export_to_json {
+        log::error!("You must specify either --csv-filename or --json-filename");
+        std::process::exit(1);
+    }
 
     // Start processing stuff and things
     let mut video_info: Vec<VideoInfo> = Vec::new();
@@ -55,13 +62,26 @@ fn run() -> Result<(), Box<dyn Error>> {
     }
 
     // Write the summary CSV file
-    let csv_filename = inout::output_csv_filename(&cli_args);
+    if export_to_csv {
+        let csv_filename = inout::output_csv_filename(&cli_args);
 
-    if !quiet {
-        log::info!("Writing summary to CSV file: {csv_filename}");
+        if !quiet {
+            log::info!("Writing summary to CSV file: {csv_filename}");
+        }
+
+        export_csv(&video_info, csv_filename.as_str())?;
     }
 
-    export_csv(&video_info, csv_filename.as_str())?;
+    // Write the summary JSON file
+    if export_to_json {
+        let json_filename = inout::output_json_filename(&cli_args);
+
+        if !quiet {
+            log::info!("Writing summary to JSON file: {json_filename}");
+        }
+
+        export_json(&video_info, json_filename.as_str())?;
+    }
 
     if !quiet && print_summary {
         log::info!("Files processed: {files_processed}");
@@ -99,4 +119,21 @@ fn export_csv(vi: &Vec<VideoInfo>, filename: &str) -> Result<(), Box<dyn Error>>
     }
     wtr.flush()?;
     Ok(())
+}
+
+/// Writes the video info to a CSV file
+///
+/// # Arguments
+///
+/// * `vi` - A reference to a vector of `VideoInfo` structs
+/// * `filename` - The name of the CSV file to write
+///
+/// # Returns
+///
+/// * `Result<(), Box<dyn Error>>` - An empty result if everything went well, or an error if not.
+fn export_json(vi: &Vec<VideoInfo>, filename: &str) -> Result<(), Box<dyn Error>> {
+    Ok(serde_json::to_writer_pretty(
+        std::fs::File::create(filename)?,
+        vi,
+    )?)
 }

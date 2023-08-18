@@ -20,21 +20,53 @@ If you need more, please feel free to open an issue or a PR - it should be relat
 ## Usage
 
 ```ignore
-Usage: mp4csv [OPTIONS] <FILE(S)>...
+Usage: mp4csv <FILE(S)>... [OPTIONS]
 
 Arguments:
   <FILE(S)>...  One or more file(s) to process. Wildcards and multiple_occurrences files (e.g. here/*.mp4 there/*.MP4)
                 are supported.
 
 Options:
-  -q, --quiet                          Don't produce any output except errors while working.
-  -p, --print-summary                  Print summary detail for each session processed.
-  -i, --input-csv <input-csv>          A CSV file with a list of files to process in the first column. The first row is
-                                       assumed to be a header and is ignored.
-  -c, --csv-filename [<csv-filename>]  The name of the resulting CSV file containing the video metadata summaries.
-                                       Default is `video-data.csv` is none is specified.
-  -h, --help                           Print help (see more with '--help')
-  -V, --version                        Print version
+  -q, --quiet                            Don't produce any output except errors while working.
+  -p, --print-summary                    Print summary detail for each session processed.
+  -i, --input-csv <input-csv>            A CSV file with a list of files to process in the first column. The first row is
+                                         assumed to be a header and is ignored.
+  -c, --csv-filename [<csv-filename>]    The name of the resulting CSV file containing the video metadata summaries.
+                                         Default is `video-data.csv` is none is specified.
+  -j, --json-filename [<json-filename>]  The name of the resulting JSON file containing the video metadata summaries. Default is `video-data.json` is none is specified.
+  -h, --help                             Print help (see more with '--help')
+  -V, --version                          Print version
+```
+
+Example:
+
+```bash
+mp4csv data/mp4/*.mp4 -j -c
+```
+
+Results in the following files.
+
+JSON:
+
+```json
+[
+  {
+    "filename": "data/mp4/EvenSolberg_20230325_004746___0003.mp4",
+    "size_bytes": 186870641,
+    "creation_time": "2023-03-25T00:47:46-07:00",
+    "modification_time": "2023-03-25T00:47:46-07:00",
+    "duration": 60.0,
+    "bitrate_kbps": 24202.0,
+    "fps": 60.0
+  }
+]
+```
+
+CSV:
+
+```csv
+filename,size_bytes,creation_time,modification_time,duration,bitrate_kbps,fps
+data/mp4/EvenSolberg_20230325_004746___0003.mp4,186870641,2023-03-25T00:47:46-07:00,2023-03-25T00:47:46-07:00,60.0,24202.0,60.0
 ```
 
 ## Installation
