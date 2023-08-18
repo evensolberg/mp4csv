@@ -68,5 +68,14 @@ pub fn build() -> ArgMatches {
                 .default_missing_value("video-data.csv")
                 .action(ArgAction::Set)
         )
+        .arg(
+            Arg::new("json-filename")
+                .short('j')
+                .long("json-filename")
+                .help("The name of the resulting JSON file containing the video metadata summaries. Default is `video-data.json` is none is specified.")
+                .num_args(..=1)
+                .default_missing_value("video-data.json")
+                .action(ArgAction::Set)
+        )
         .get_matches()
 }

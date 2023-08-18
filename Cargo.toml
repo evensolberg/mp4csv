@@ -1,6 +1,6 @@
 [package]
 name = "mp4csv"
-version = "0.3.4"
+version = "0.4.0"
 edition = "2021"
 license = "MIT"
 description = "A tool to extract metadata from MP4 files and output them as CSV"
@@ -24,6 +24,7 @@ log = "0.4.20"
 # mp4 = { path = "../_crates/rust-mp4" }
 mp4 = "0.14.0"
 serde = { version = "1.0.183", features = ["derive"] }
+serde_json = "1.0.105"
 serde_with = { version = "3.2.0", features = ["chrono"] }
 
 # The profile that 'cargo dist' will build with

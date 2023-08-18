@@ -88,3 +88,26 @@ pub fn output_csv_filename(cli_args: &clap::ArgMatches) -> String {
         .unwrap_or(&default_filename);
     csv_filename.to_string()
 }
+
+/// Returns the name of the JSON file to write from the command line arguments
+///
+/// # Arguments
+///
+/// * `cli_args` - A reference to the command line arguments
+///
+/// # Returns
+///
+/// * `String` - The name of the JSON file to write
+///
+/// # Example
+///
+/// ```ignore
+/// let csv_filename = output_json_filename(&cli_args);
+/// ```
+pub fn output_json_filename(cli_args: &clap::ArgMatches) -> String {
+    let default_filename = "video-data.json".to_string();
+    let json_filename = cli_args
+        .get_one::<String>("json-filename")
+        .unwrap_or(&default_filename);
+    json_filename.to_string()
+}

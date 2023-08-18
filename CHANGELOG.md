@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### Doc
+
+- README update
+
+## [0.3.4] - 2023-08-18
+
 ### Chore
 
 - Update cargo
@@ -12,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - Minor changes
 - Update file-format requirement from 0.17.3 to 0.18.0
 - Update mp4 requirement from 0.13.0 to 0.14.0
+- Dependency update
 
 ## [0.3.3] - 2023-05-27
 
