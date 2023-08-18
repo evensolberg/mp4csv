@@ -1,6 +1,21 @@
 # mp4csv
 
-Exports file information from MP4 and (maybe eventually) AVI files to a CSV for statistical processing
+Exports file information from MP4 and (maybe eventually) AVI files to a CSV for statistical processing. I needed this to process a large number of video files from my trail cameras (to keep track of wildlife coming and going) and didn't want to do it by hand.
+
+The following information is exported:
+
+| Column Name | Description |
+| ----------- | ----------- |
+| `filename` | The name of the file |
+| `file_size` | The size of the file in bytes |
+| `creation_time` | The creation date and time of the file as a `DateTime<Local>`|
+| `modification_time` | The modification date and time of the file as a `DateTime<Local>`|
+| `duration` | The duration of the video in seconds |
+| `bitrate_kbps` | The bitrate of the video in kilobits per second |
+| `fps` | The frame rate of the video in frames per second |
+
+While this is hardly exhaustive, it is all I needed for my purposes.
+If you need more, please feel free to open an issue or a PR - it should be relatively easy to add more fields.
 
 ## Usage
 
@@ -33,3 +48,14 @@ cargo install --path .
 ```
 
 You can also inspect the `justfile` and potentially run `just release` to build a release version of the binary and place it into `/usr/local/bin`.
+
+You can also download a binary from the Releases page and put somewhere in your path.
+
+## To Do
+
+- [ ] Add the ability to recurse directories. Right now you need to be able to use the `**` wildcard to recurse directories.
+  - This is not a huge issue since you can just recurse directories yourself and pass the list of files to `mp4csv` using the `-i` option.
+- [ ] Add the ability to parse AVI files. Right now I'm having to convert them to MP4s to get the information I need, and getting `ffmpeg` to retain the creation date is a pain.
+- [ ] Add more fields
+- [ ] Add the ability to specify the output format (e.g. JSON, YAML, etc.)
+- [ ] Add the ability to select which fields to output
