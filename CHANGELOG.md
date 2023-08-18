@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
 - Update cargo
 - Update file-format requirement from 0.16.0 to 0.17.3
 - Dependencies update
+- Minor changes
+- Update file-format requirement from 0.17.3 to 0.18.0
+- Update mp4 requirement from 0.13.0 to 0.14.0
 
 ## [0.3.3] - 2023-05-27
 

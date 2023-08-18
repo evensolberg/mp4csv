@@ -1,6 +1,6 @@
 [package]
 name = "mp4csv"
-version = "0.3.3"
+version = "0.3.4"
 edition = "2021"
 license = "MIT"
 description = "A tool to extract metadata from MP4 files and output them as CSV"
@@ -15,16 +15,16 @@ authors = ["Even Solberg <even.solberg@gmail.com>"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chrono = { version = "0.4.24", features = ["serde"] }
-clap = { version = "4.3.0", features = ["cargo", "env", "wrap_help"] }
-csv = "1.2.1"
+chrono = { version = "0.4.26", features = ["serde"] }
+clap = { version = "4.3.22", features = ["cargo", "env", "wrap_help"] }
+csv = "1.2.2"
 env_logger = "0.10.0"
 file-format = "0.18.0"
-log = "0.4.17"
+log = "0.4.20"
 # mp4 = { path = "../_crates/rust-mp4" }
 mp4 = "0.14.0"
-serde = { version = "1.0.161", features = ["derive"] }
-serde_with = { version = "3.0.0", features = ["chrono"] }
+serde = { version = "1.0.183", features = ["derive"] }
+serde_with = { version = "3.2.0", features = ["chrono"] }
 
 # The profile that 'cargo dist' will build with
 [profile.dist]
