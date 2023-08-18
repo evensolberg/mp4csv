@@ -1,6 +1,6 @@
 # mp4csv
 
-Exports file information from MP4 and (eventually) AVI files to a CSV for statistical processing
+Exports file information from MP4 and (maybe eventually) AVI files to a CSV for statistical processing
 
 ## Usage
 
