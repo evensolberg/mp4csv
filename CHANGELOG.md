@@ -2,11 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.4.0] - 2023-08-18
 
 ### Doc
 
 - README update
+
+### Feat
+
+- Add JSON export
 
 ## [0.3.4] - 2023-08-18
 
