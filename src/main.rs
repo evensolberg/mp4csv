@@ -1,4 +1,5 @@
 use clap::parser::ValueSource; // Command line
+use glob::glob; // File globbing
 
 use std::error::Error;
 
@@ -47,48 +48,31 @@ fn run() -> Result<(), Box<dyn Error>> {
         std::process::exit(1);
     }
 
+    let files_to_process = inout::files_to_process(&cli_args)?;
+
     // Start processing stuff and things
     let mut video_info: Vec<VideoInfo> = Vec::new();
-    let mut files_processed = 0;
-    for filename in inout::files_to_process(&cli_args)? {
-        if !quiet {
-            log::info!("Processing: {filename}");
-        }
 
-        let vi = VideoInfo::from(filename.as_str())?;
-        log::debug!("vi = {vi:#?}");
-        video_info.push(vi);
-        files_processed += 1;
-    }
+    let mut filenames: Vec<String> = Vec::new();
+
+    // Expand the paths
+    extract_paths(files_to_process, &mut filenames)?;
+
+    // Process the files
+    let files_processed = process_files(filenames, quiet, &mut video_info)?;
 
     // Write the summary CSV file
-    if export_to_csv {
-        let csv_filename = inout::output_csv_filename(&cli_args);
-
-        if !quiet {
-            log::info!("Writing summary to CSV file: {csv_filename}");
-        }
-
-        export_csv(&video_info, csv_filename.as_str())?;
-    }
+    write_csv(export_to_csv, &cli_args, quiet, &video_info)?;
 
     // Write the summary JSON file
-    if export_to_json {
-        let json_filename = inout::output_json_filename(&cli_args);
-
-        if !quiet {
-            log::info!("Writing summary to JSON file: {json_filename}");
-        }
-
-        export_json(&video_info, json_filename.as_str())?;
-    }
+    write_json(export_to_json, cli_args, quiet, video_info)?;
 
     if !quiet && print_summary {
         log::info!("Files processed: {files_processed}");
     }
 
     Ok(())
-} // fn run()
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// The actual executable function that gets called when the program in invoked.
@@ -137,3 +121,82 @@ fn export_json(vi: &Vec<VideoInfo>, filename: &str) -> Result<(), Box<dyn Error>
         vi,
     )?)
 }
+
+/// Decide whether to write to JSON or not. If so, write it.
+fn write_json(
+    export_to_json: bool,
+    cli_args: clap::ArgMatches,
+    quiet: bool,
+    video_info: Vec<VideoInfo>,
+) -> Result<(), Box<dyn Error>> {
+    if export_to_json {
+        let json_filename = inout::output_json_filename(&cli_args);
+
+        if !quiet {
+            log::info!("Writing summary to JSON file: {json_filename}");
+        }
+
+        export_json(&video_info, json_filename.as_str())?;
+    };
+    Ok(())
+}
+
+/// Decide whether to write to CSV or not. If so, write it.
+fn write_csv(
+    export_to_csv: bool,
+    cli_args: &clap::ArgMatches,
+    quiet: bool,
+    video_info: &Vec<VideoInfo>,
+) -> Result<(), Box<dyn Error>> {
+    if export_to_csv {
+        let csv_filename = inout::output_csv_filename(cli_args);
+
+        if !quiet {
+            log::info!("Writing summary to CSV file: {csv_filename}");
+        }
+
+        export_csv(video_info, csv_filename.as_str())?;
+    };
+    Ok(())
+}
+
+/// Expand the paths in the command line arguments
+fn extract_paths(
+    files_to_process: Vec<String>,
+    filenames: &mut Vec<String>,
+) -> Result<(), Box<dyn Error>> {
+    for input_path in files_to_process {
+        let glob = glob(input_path.as_str())?;
+        log::debug!("glob = {glob:?}");
+        for entry in glob {
+            match entry {
+                Ok(path) => {
+                    filenames.push(path.to_str().unwrap().to_string());
+                }
+                Err(e) => {
+                    log::error!("Error processing glob: {}", e);
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn process_files(
+    filenames: Vec<String>,
+    quiet: bool,
+    video_info: &mut Vec<VideoInfo>,
+) -> Result<u32, Box<dyn Error>> {
+    let mut files_processed = 0;
+    for filename in &filenames {
+        if !quiet {
+            log::info!("Processing: {filename}");
+        }
+
+        let vi = VideoInfo::from(filename.as_str())?;
+        log::debug!("vi = {vi:#?}");
+        video_info.push(vi);
+        files_processed += 1;
+    }
+    Ok(files_processed)
+} // fn run()

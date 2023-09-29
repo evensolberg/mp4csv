@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [unreleased]
+
+### Chore
+
+- Update file-format requirement from 0.18.0 to 0.19.0
+- Update file-format requirement from 0.19.0 to 0.20.0
+
+### Doc
+
+- Changelog update for v0.4.0
+
 ## [0.4.0] - 2023-08-18
 
 ### Doc
