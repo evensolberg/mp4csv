@@ -1,6 +1,6 @@
 [package]
 name = "mp4csv"
-version = "0.4.0"
+version = "0.5.1"
 edition = "2021"
 license = "MIT"
 description = "A tool to extract metadata from MP4 files and output them as CSV"
@@ -20,6 +20,7 @@ clap = { version = "4.4.6", features = ["cargo", "env", "wrap_help"] }
 csv = "1.2.2"
 env_logger = "0.10.0"
 file-format = "0.20.0"
+glob = "0.3.1"
 log = "0.4.20"
 # mp4 = { path = "../_crates/rust-mp4" }
 mp4 = "0.14.0"
