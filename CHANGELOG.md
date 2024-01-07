@@ -8,10 +8,20 @@ All notable changes to this project will be documented in this file.
 
 - Update file-format requirement from 0.18.0 to 0.19.0
 - Update file-format requirement from 0.19.0 to 0.20.0
+- Update Cargo.toml
+- Update
+- Update file-format requirement from 0.20.0 to 0.21.0
+- Update file-format requirement from 0.21.0 to 0.22.0
+- Update file-format requirement from 0.22.0 to 0.23.0
+- Update deps and add Mergify
 
 ### Doc
 
 - Changelog update for v0.4.0
+
+### Feat
+
+- Add support for globbing
 
 ## [0.4.0] - 2023-08-18
 
